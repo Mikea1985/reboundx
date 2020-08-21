@@ -1,5 +1,4 @@
 """This is a python wrapper to an ephemeris-quality integrator function.
-
 This wrapper uses ctypes to access a reboundx c library that contains an
 extension for carrying out highly accurate integrations of test
 particles moving in the field of the sun, planets, moon, and massive
@@ -30,7 +29,6 @@ def integration_function(tstart, tstep, trange,
                          n_particles,
                          instate_arr):
     """Wrapper for the c integration_function.
-
     Parameters
     ----------
     tstart : float
@@ -46,7 +44,6 @@ def integration_function(tstart, tstep, trange,
     instate_arr : numpy array of float (compatible with c doubles).
          This a 1-d array of floats, giving initial (x, y, z, vx, vy, vz) 
          for each test particle.
-
     Returns
     -------
     np.array 
@@ -59,7 +56,6 @@ def integration_function(tstart, tstep, trange,
          number of output times         
     int
          number of particles
-
     """
 
     # Instantiate a TimeState structure to hold the integration results.
@@ -74,7 +70,7 @@ def integration_function(tstart, tstep, trange,
                                       POINTER(c_double),
                                       POINTER(TimeState))
 
-    _integration_function.restype = None
+    #_integration_function.restype = None
 
     return_value = _integration_function(tstart, tstep, trange, geocentric,
                                          n_particles,
@@ -84,8 +80,7 @@ def integration_function(tstart, tstep, trange,
     # Parse and restructure the results
     n_out = timestate.n_out
     times  = np.ctypeslib.as_array(timestate.t, shape=(n_out,))
-    states = np.ctypeslib.as_array(timestate.state, shape=(n_out, n_particles, 6))
+    states = np.ctypeslib.as_array(timestate.state, shape=(n_out, 7*n_particles, 6))
     n_particles = timestate.n_particles
 
     return times, states, n_out, n_particles
-
